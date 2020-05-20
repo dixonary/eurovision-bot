@@ -1,0 +1,177 @@
+# This is a sample run of the program (as it was used on uwcs-eurovision day!)
+
+> Titles
+> PlayNext
+ALB
+> PlayNext
+ARM
+> PlayNext
+AUS
+> PlayNext
+AUT
+> PlayNext
+AZE
+> PlayNext
+BLR
+> PlayNext
+BEL
+> PlayNest
+??
+> PlayNext
+BGR
+> PlayNext
+HRV
+> PlayNext
+CHE
+> PlayNext
+CYP
+> PlayNext
+CZE
+> PlayNext
+DNK
+> PlayNext
+EST
+> PlayNext
+FIN
+> PlayNext
+FRA
+> PlayNext
+GEO
+> PlayNext
+DEU
+> PlayNext
+GRC
+> PlayNext
+ISL
+> PlayNext
+ISR
+> PlayNext
+IRL
+> PlayNext
+ITA
+> PlayNext
+LVA
+> PlayNext
+LTU
+> PlayNext
+MLT
+> PlayNext
+MDA
+> PlayNext
+NLD
+> PlayNext
+MKD
+> PlayNext
+NOR
+> PlayNext
+POL
+> PlayNext
+PRT
+> PlayNext
+ROU
+> PlayNext
+RUS
+> PlayNext
+SMR
+> PlayNext
+SRB
+> PlayNext
+SVN
+> PlayNext
+ESP
+> PlayNext
+SWE
+> PlayNext
+UKR
+> PlayNext
+GBR
+> Play ISL
+ISL
+> Play AZR
+??
+> Play AZE
+AZE
+> Play LTU
+LTU
+> TakeBallots
+> User "dixonary"
+> Ten
+> Twelve
+> User "Armityle"
+> Ten
+> Twelve
+> User "whoknowswho"
+> Ten
+> Twelve
+> User "EmilyJR01"
+> Ten
+> Twelve
+> User "Sinjo"
+> Ten
+> Twelve
+> User "distributive law"
+> Ten
+> Twelve
+> User "Andromeda"
+> Ten
+> Twelve
+> User "Des"
+> Ten
+> Twelve
+> User "Jackaphobia"
+User not found: Jackaphobia
+> User "Jackaphboia"
+> Ten
+> Twelve
+> User "Nightingale33"
+> Ten
+> Twelve
+> User "samthecoy"
+> Ten
+> Twelve
+> User "DCatcher"
+> Ten
+> Twelve
+> AddAllFor CHE
+> AddAllFor UKR
+> AddAllFor ESP
+> AddAllFor SVN
+> AddAllFor SRB
+> AddAllFor SMR
+> AddAllFor RUS
+> AddAllFor ROU
+> AddAllFor PRT
+> AddAllFor NOR
+> AddAllFor POL
+> AddAllFor MKD
+> AddAllFor NLD
+> AddAllFor MDA
+> AddAllFor MLT
+> AddAllFor LVA
+> AddAllFor ITA
+> AddAllFor GRC
+> AddAllFor DEU
+> AddAllFor GEO
+> AddAllFor FRA
+> AddAllFor FIN
+> AddAllFor EST
+> AddAllFor CZE
+> AddAllFor CYP
+> AddAllFor HRV
+> AddAllFor BGR
+> AddAllFor BEL
+> AddAllFor BLR
+> AddAllFor AZE
+> AddAllFor AUS
+> AddAllFor ARM
+> AddAllFor ALB
+> AddAllFor GBR
+> AddAllFor ISR
+> AddAllFor AUT
+> AddAllFor LTU
+> AddAllFor DNK
+> AddAllFor IRL
+> AddAllFor SWE
+> AddAllFor ISL
+> Titles
+>
