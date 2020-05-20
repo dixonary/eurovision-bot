@@ -1,0 +1,43 @@
+body {
+  margin: 0;
+  background-color: skyblue;
+}
+
+p {
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+}
+
+.report {
+  display: inline-block;
+  margin: 1rem;
+  border-radius: 0.25rem;
+  border: 2px solid white;
+  width: 10rem;
+}
+
+.name {
+  border-bottom: 2px solid white;
+  padding: 0.5rem;
+  text-overflow: ellipsis;
+  overflow-wrap: none;
+  word-wrap: none;
+  text-align: center;
+}
+
+.score {
+  width: 5rem;
+  display: inline-block;
+  padding: 0.125rem 0.5rem;
+  text-align: right;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: "Gotham", sans-serif;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}

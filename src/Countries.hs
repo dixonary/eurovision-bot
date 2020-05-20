@@ -1,49 +1,50 @@
 module Countries where
-  
+
 import Data.String
 
 data CountryCode
-    = ALB
-    | ARM
-    | AUS
-    | AUT
-    | AZE
-    | BLR
-    | BEL
-    | BGR
-    | HRV
-    | CYP
-    | CZE
-    | DNK
-    | EST
-    | FIN
-    | FRA
-    | GEO
-    | DEU
-    | GRC
-    | ISL
-    | ISR
-    | IRL
-    | ITA
-    | LVA
-    | LTU
-    | MLT
-    | MDA
-    | NLD
-    | MKD
-    | NOR
-    | POL
-    | PRT
-    | ROU
-    | RUS
-    | SMR
-    | SRB
-    | SVN
-    | ESP
-    | SWE
-    | UKR
-    | GBR
-  deriving (Show, Read, Eq, Ord)
+  = ALB
+  | ARM
+  | AUS
+  | AUT
+  | AZE
+  | BLR
+  | BEL
+  | BGR
+  | HRV
+  | CHE
+  | CYP
+  | CZE
+  | DNK
+  | EST
+  | FIN
+  | FRA
+  | GEO
+  | DEU
+  | GRC
+  | ISL
+  | ISR
+  | IRL
+  | ITA
+  | LVA
+  | LTU
+  | MLT
+  | MDA
+  | NLD
+  | MKD
+  | NOR
+  | POL
+  | PRT
+  | ROU
+  | RUS
+  | SMR
+  | SRB
+  | SVN
+  | ESP
+  | SWE
+  | UKR
+  | GBR
+  deriving (Show, Read, Eq, Ord, Enum, Bounded)
 
 getFlag :: IsString s => CountryCode -> s
 getFlag ALB = ":flag_al:"
@@ -64,6 +65,7 @@ getFlag FRA = ":flag_fr:"
 getFlag GEO = ":flag_ge:"
 getFlag DEU = ":flag_de:"
 getFlag GRC = ":flag_gr:"
+getFlag CHE = ":flag_ch:"
 getFlag ISL = ":flag_is:"
 getFlag ISR = ":flag_il:"
 getFlag IRL = ":flag_ie:"
@@ -85,7 +87,7 @@ getFlag SVN = ":flag_sl:"
 getFlag ESP = ":flag_es:"
 getFlag SWE = ":flag_se:"
 getFlag UKR = ":flag_ua:"
-getFlag GBR = ":flag_gb:" 
+getFlag GBR = ":flag_gb:"
 
 getEmoji :: IsString s => CountryCode -> s
 getEmoji ALB = "\127462\127473"
@@ -97,6 +99,7 @@ getEmoji BLR = "\127463\127486"
 getEmoji BEL = "\127463\127466"
 getEmoji BGR = "\127463\127468"
 getEmoji HRV = "\127469\127479"
+getEmoji CHE = "\127464\127469"
 getEmoji CYP = "\127464\127486"
 getEmoji CZE = "\127464\127487"
 getEmoji DNK = "\127465\127472"
@@ -139,6 +142,7 @@ getName BLR = "Belarus"
 getName BEL = "Belgium"
 getName BGR = "Bulgaria"
 getName HRV = "Croatia"
+getName CHE = "Switzerland"
 getName CYP = "Cyprus"
 getName CZE = "Czechia"
 getName DNK = "Denmark"
@@ -169,4 +173,4 @@ getName SVN = "Slovenia"
 getName ESP = "Spain"
 getName SWE = "Sweden"
 getName UKR = "Ukraine"
-getName GBR = "United Kingdom" 
+getName GBR = "United Kingdom"

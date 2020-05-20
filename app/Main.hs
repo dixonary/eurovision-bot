@@ -1,26 +1,22 @@
 module Main where
 
-import Types
-import Countries
-
-import Reporter
 import Bot
-import Totalizer
-
+import CLI
 import Control.Concurrent (forkIO, threadDelay)
 import Control.Monad (forever)
-
 import Control.Monad.Reader
+import Countries
+import Reporter
+import Types
 
 main :: IO ()
 main = do
   state <- initializeState
-  forkIO $ runTotalizer state
-  forkIO $ runReporter state
+  forkIO $ runReporter
+  forkIO $ runOverlay
+  forkIO $ runCLI state
   forkIO $ runReaderT runBot state
-
   forever (threadDelay maxBound)
-
 -- loop :: IO ()
 -- loop = do
 --   line <- getFile "> "
@@ -35,7 +31,7 @@ main = do
 --   moves <- readMoves
 --   let idk = putStrLn "Need a filename to proceed."
 --   case moves of
---     [] -> idk 
+--     [] -> idk
 --     [Twelve _] -> idk
 --     [Lower file] -> do
 --       putStrLn "Applying Twelve..."
@@ -54,16 +50,14 @@ main = do
 -- unapply :: Move -> IO ()
 -- unapply = applyWith (-)
 
-
 -- apply :: Move -> IO ()
 -- apply = applyWith (+)
-
 
 -- applyWith :: Num a => (a -> a -> a) -> Move -> IO ()
 -- applyWith comb move = do
 --   scores <- case move of
 --     Lower file -> do
---       s <- readScores file 
+--       s <- readScores file
 --       return $ Map.delete 12 s
 --     Twelve file -> do
 --       s <- readScores file
@@ -73,7 +67,6 @@ main = do
 --   let t' = Map.unionWith comb totals scores
 --   writeTotal totals
 --   addMove move
-
 
 -- setupTotal :: IO ()
 -- setupTotal = do
@@ -89,7 +82,7 @@ main = do
 -- -- Reading and writing scores
 
 -- writeTotal :: Map String Integer -> IO ()
--- writeTotal = writeScores totalsFile 
+-- writeTotal = writeScores totalsFile
 
 -- readTotal :: IO (Map String Integer)
 -- readTotal = readScores totalsFile
@@ -121,7 +114,6 @@ main = do
 
 -- getFile :: String -> IO (Maybe String)
 -- getFile = runInputT (setComplete completeFilename defaultSettings) . getInputLine
-
 
 -- --------------------------------------------------------------------------------
 -- -- Reading and writing moves

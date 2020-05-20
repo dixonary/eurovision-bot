@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: ab8f6b80da2eae7bd6c40a3b4f7dacaf8c6d447be561b10d72f87c93aad74c84
+-- hash: b82241660152d0bd9dd6cef40a0c3659ddde756c8bab80d92d20a2b4767162f5
 
 name:           eurovision-scores
 version:        0.1.0.0
@@ -37,41 +37,46 @@ library
       src
   default-extensions: MultiWayIf RecordWildCards OverloadedStrings NondecreasingIndentation LambdaCase TupleSections
   build-depends:
-      attoparsec
+      aeson
+    , attoparsec
     , base >=4.7 && <5
     , bytestring
     , containers
     , directory
     , discord-haskell
-    , emoji
     , haskeline
     , mtl
+    , process
     , stm
     , text
+    , wss-client
   default-language: Haskell2010
 
 executable eurovision-scores-exe
   main-is: Main.hs
   other-modules:
       Bot
+      CLI
       Reporter
-      Totalizer
+      Websockets
       Paths_eurovision_scores
   hs-source-dirs:
       app
   default-extensions: MultiWayIf RecordWildCards OverloadedStrings NondecreasingIndentation LambdaCase TupleSections
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      attoparsec
+      aeson
+    , attoparsec
     , base >=4.7 && <5
     , bytestring
     , containers
     , directory
     , discord-haskell
-    , emoji
     , eurovision-scores
     , haskeline
     , mtl
+    , process
     , stm
     , text
+    , wss-client
   default-language: Haskell2010

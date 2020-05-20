@@ -1,0 +1,101 @@
+html {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #506ebf, #112178);
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+p {
+  margin: 0;
+}
+
+h1 {
+  text-align: center;
+}
+
+.totals {
+  display: inline-block;
+  margin: 1rem;
+  border-radius: 0.25rem;
+  border: 2px solid white;
+  width: 10rem;
+}
+
+.score {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  font-size: 2rem;
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  background-color: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem;
+  padding-left: 0.75rem;
+  width: 25rem;
+  margin: auto;
+  margin-bottom: 1rem;
+  break-inside: avoid;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  transition: all 1s;
+}
+
+.value {
+  flex-grow: 1;
+  text-align: right;
+  padding-right: 0.5rem;
+}
+
+.countryName {
+  font-size: 0.9em;
+  font-weight: 400;
+}
+
+.score .emoji {
+  height: 3rem;
+}
+
+.score img {
+  height: 3rem;
+  margin-right: 1rem;
+}
+
+.score.moving {
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: none;
+}
+
+.score > * {
+  display: inline-block;
+}
+
+.name {
+  border-bottom: 2px solid white;
+  padding: 0.5rem;
+  text-overflow: ellipsis;
+  overflow-wrap: none;
+  word-wrap: none;
+  text-align: center;
+}
+
+#scores {
+  padding: 1rem;
+  display: flex;
+  flex-flow: column wrap;
+  justify-content: flex-start;
+  height: -webkit-fill-available;
+  max-height: 1080px;
+}
+
+* {
+  box-sizing: border-box;
+  color: white;
+  font-family: "Gotham", sans-serif;
+  font-weight: bold;
+  font-variant-numeric: tabular-nums;
+}

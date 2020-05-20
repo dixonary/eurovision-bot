@@ -18,6 +18,13 @@ packages:
       sha256: dd9ea90a631342e5db0fc21331ade4d563a685e9125d5a3989eefa8e1b96c6c6
   original:
     hackage: emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273
+- completed:
+    hackage: wss-client-0.3.0.0@sha256:0c4170c5331ead61fe326e9f4789bcec6cc66ea6268fca6c0dba48be5abeaeaf,1985
+    pantry-tree:
+      size: 457
+      sha256: 7e25dc1799bbfa8f90e623e27a02809f26bf46e29a051a9fc58619eb007e81cb
+  original:
+    hackage: wss-client-0.3.0.0@sha256:0c4170c5331ead61fe326e9f4789bcec6cc66ea6268fca6c0dba48be5abeaeaf,1985
 snapshots:
 - completed:
     size: 496112

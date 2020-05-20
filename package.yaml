@@ -30,7 +30,9 @@ dependencies:
   - bytestring
   - attoparsec
   - mtl
-  - emoji
+  - process
+  - aeson
+  - wss-client
 
 default-extensions:
   - MultiWayIf

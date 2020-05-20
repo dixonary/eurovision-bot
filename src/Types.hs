@@ -1,61 +1,49 @@
 module Types where
 
+import Control.Arrow ((>>>))
+import Control.Concurrent.STM
+import Control.Monad (unless)
+import Control.Monad.Reader
+import Countries
+import Data.Function ((&))
+import qualified Data.List as List
 import Data.Map (Map)
 import qualified Data.Map as Map
-
-import Control.Monad.Reader
-import Control.Concurrent.STM
-
-import System.Directory (doesFileExist)
-import Control.Monad (unless)
-
-import Data.Function ((&))
-
 import Discord.Types
-
-
-import Countries
-
+import System.Directory (doesFileExist)
+import Util
 
 type Totals = Map CountryCode Integer
 
 type Ballot = Map Integer CountryCode
 
-data Move
-  = Lower String
-  | Twelve String
-  deriving (Show, Read, Eq)
-
 type Env = TVar State
-type Eurovision = ReaderT (TVar State) IO
 
+type Eurovision = ReaderT (TVar State) IO
 
 --------------------------------------------------------------------------------
 -- Game State
-data State = State
-  { ballots :: Map UserId Ballot
-  , totals :: Map CountryCode Integer
-  , moves :: [Move]
-  , dmChannels :: Map UserId ChannelId 
-  , scoreMessages :: Map UserId MessageId
-  }
+data State
+  = State
+      { ballots :: Map UserId Ballot,
+        totals :: Map CountryCode Integer,
+        dmChannels :: Map UserId ChannelId,
+        scoreMessages :: Map UserId MessageId,
+        userNames :: Map UserId String,
+        untotaledBallots :: Map UserId Ballot,
+        lastPlayed :: Int,
+        currentUser :: Maybe UserId
+      }
   deriving (Show, Read, Eq)
 
-instance Semigroup State where
-  (State v t m c s) <> (State v2 t2 m2 c2 s2) 
-    = State (v<>v2) (t<>t2) (m<>m2) (c<>c2) (s<>s2)
-
-instance Monoid State where 
-  mempty = State mempty mempty mempty mempty mempty
-
+empty :: State
+empty = State mempty mempty mempty mempty mempty mempty (-1) Nothing
 
 stateFile :: String
 stateFile = ".state"
 
-
-
 getState :: Eurovision State
-getState = do 
+getState = do
   st <- ask
   liftIO $ readTVarIO st
 
@@ -67,7 +55,7 @@ get func = do
 modifyState :: (State -> State) -> Eurovision ()
 modifyState func = do
   st <- ask
-  liftIO $ atomically $ modifyTVar st func 
+  liftIO $ atomically $ modifyTVar st func
   serialize
 
 -- Read the current total state from a file.
@@ -75,7 +63,7 @@ modifyState func = do
 initializeState :: IO Env
 initializeState = do
   exists <- doesFileExist stateFile
-  unless exists $ newTVarIO mempty >>= runReaderT serialize
+  unless exists $ newTVarIO empty >>= runReaderT serialize
   (readFile stateFile & fmap read) >>= newTVarIO
 
 -- Write the current total state out to a file.
@@ -84,3 +72,26 @@ serialize :: Eurovision ()
 serialize = do
   state <- getState
   liftIO $ writeFile stateFile $ show state
+  liftIO $ writeFile "app/reporter/report.json" $ getReport (userNames state) (ballots state)
+  liftIO $ writeFile "app/totalizer/totals.json" $ getTotals (totals state)
+
+getTotals :: Map CountryCode Integer -> String
+getTotals totals = totals
+  & Map.toAscList
+  & fmap (\(s, c) -> show (show s) ++ ":" ++ show (show c))
+  & List.intercalate ",\n"
+  & \x -> "{ " ++ x ++ " }"
+
+getReport :: Map UserId String -> Map UserId (Map Integer CountryCode) -> String
+getReport userNames ballots =
+  ballots
+    & Map.toAscList
+    & fmap (\(n, v) -> "{ \"name\" : \"" ++ (userNames !@ n) ++ "\" , \"scores\" : { " ++ getScores v ++ " } }")
+    & List.intercalate ",\n"
+    & (\x -> "[ " ++ x ++ " ]")
+
+getScores :: Map Integer CountryCode -> String
+getScores =
+  Map.toDescList
+    >>> fmap (\(s, c) -> show (show s) ++ ":" ++ show (show c))
+    >>> List.intercalate ",\n"
