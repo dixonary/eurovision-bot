@@ -1,14 +1,14 @@
-name:                eurovision-scores
-version:             0.1.0.0
-github:              "dixonary/eurovision-scores"
-license:             BSD3
-author:              "Alex Dixon"
-maintainer:          "alex@dixonary.co.uk"
-copyright:           "Alex Dixon"
+name: eurovision-scores
+version: 0.1.0.0
+github: "dixonary/eurovision-scores"
+license: BSD3
+author: "Alex Dixon"
+maintainer: "alex@dixonary.co.uk"
+copyright: "Alex Dixon"
 
 extra-source-files:
-- README.md
-- ChangeLog.md
+  - README.md
+  - ChangeLog.md
 
 # Metadata used when publishing your package
 # synopsis:            Short description of your package
@@ -17,32 +17,49 @@ extra-source-files:
 # To avoid duplicated efforts in documentation and dealing with the
 # complications of embedding Haddock markup inside cabal files, it is
 # common to point users to the README.md file.
-description:         Please see the README on GitHub at <https://github.com/dixonary/eurovision-scores#readme>
+description: Please see the README on GitHub at <https://github.com/dixonary/eurovision-scores#readme>
 
 dependencies:
-- base >= 4.7 && < 5
+  - base >= 4.7 && < 5
+  - containers
+  - haskeline
+  - directory
+  - stm
+  - discord-haskell
+  - text
+  - bytestring
+  - attoparsec
+  - mtl
+  - emoji
+
+default-extensions:
+  - MultiWayIf
+  - RecordWildCards
+  - OverloadedStrings
+  - NondecreasingIndentation
+  - LambdaCase
+  - TupleSections
 
 library:
   source-dirs: src
 
 executables:
   eurovision-scores-exe:
-    main:                Main.hs
-    source-dirs:         app
+    main: Main.hs
+    source-dirs: app
     ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
+      - -threaded
+      - -rtsopts
+      - -with-rtsopts=-N
     dependencies:
-    - eurovision-scores
-
-tests:
-  eurovision-scores-test:
-    main:                Spec.hs
-    source-dirs:         test
-    ghc-options:
-    - -threaded
-    - -rtsopts
-    - -with-rtsopts=-N
-    dependencies:
-    - eurovision-scores
+      - eurovision-scores
+# tests:
+#   eurovision-scores-test:
+#     main: Spec.hs
+#     source-dirs: test
+#     ghc-options:
+#       - -threaded
+#       - -rtsopts
+#       - -with-rtsopts=-N
+#     dependencies:
+#       - eurovision-scores

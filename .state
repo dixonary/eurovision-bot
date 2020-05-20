@@ -1,0 +1,1 @@
+State {ballots = fromList [(189094892532662274,fromList [(10,GBR),(12,RUS)])], totals = fromList [], moves = [], dmChannels = fromList [(189094892532662274,712346049032880159)], scoreMessages = fromList [(189094892532662274,712454192077209660)]}
