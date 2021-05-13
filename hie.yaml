@@ -1,0 +1,22 @@
+cradle:
+  stack:
+    - path: "./src"
+      component: "eurovision-scores:lib"
+
+    - path: "./app/Main.hs"
+      component: "eurovision-scores:exe:eurovision-scores-exe"
+
+    - path: "./app/Bot.hs"
+      component: "eurovision-scores:exe:eurovision-scores-exe"
+
+    - path: "./app/CLI.hs"
+      component: "eurovision-scores:exe:eurovision-scores-exe"
+
+    - path: "./app/Reporter.hs"
+      component: "eurovision-scores:exe:eurovision-scores-exe"
+
+    - path: "./app/Websockets.hs"
+      component: "eurovision-scores:exe:eurovision-scores-exe"
+
+    - path: "./app/Paths_eurovision_scores.hs"
+      component: "eurovision-scores:exe:eurovision-scores-exe"

@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b82241660152d0bd9dd6cef40a0c3659ddde756c8bab80d92d20a2b4767162f5
+-- hash: 8c56665c383b208263f422cd01d3cdaf6ddc2fe69ba296ff1d5f7fb028629245
 
 name:           eurovision-scores
 version:        0.1.0.0
@@ -25,33 +25,6 @@ source-repository head
   type: git
   location: https://github.com/dixonary/eurovision-scores
 
-library
-  exposed-modules:
-      Countries
-      Score
-      Types
-      Util
-  other-modules:
-      Paths_eurovision_scores
-  hs-source-dirs:
-      src
-  default-extensions: MultiWayIf RecordWildCards OverloadedStrings NondecreasingIndentation LambdaCase TupleSections
-  build-depends:
-      aeson
-    , attoparsec
-    , base >=4.7 && <5
-    , bytestring
-    , containers
-    , directory
-    , discord-haskell
-    , haskeline
-    , mtl
-    , process
-    , stm
-    , text
-    , wss-client
-  default-language: Haskell2010
-
 executable eurovision-scores-exe
   main-is: Main.hs
   other-modules:
@@ -59,11 +32,16 @@ executable eurovision-scores-exe
       CLI
       Reporter
       Websockets
+      Countries
+      Score
+      Types
+      Util
       Paths_eurovision_scores
   hs-source-dirs:
       app
+      src
   default-extensions: MultiWayIf RecordWildCards OverloadedStrings NondecreasingIndentation LambdaCase TupleSections
-  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N -Werror -Wall -Wno-name-shadowing
   build-depends:
       aeson
     , attoparsec
@@ -72,7 +50,6 @@ executable eurovision-scores-exe
     , containers
     , directory
     , discord-haskell
-    , eurovision-scores
     , haskeline
     , mtl
     , process

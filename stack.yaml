@@ -17,7 +17,7 @@
 #
 # resolver: ./custom-snapshot.yaml
 # resolver: https://example.com/snapshots/2018-01-01.yaml
-resolver: lts-15.13
+resolver: lts-17.11
 
 # User packages to be built.
 # Various formats can be used as shown in the example below.
@@ -39,10 +39,9 @@ packages:
 # - git: https://github.com/commercialhaskell/stack.git
 #   commit: e7b331f14bcffb8367cd58fbfc8b40ec7642100a
 #
-extra-deps:
-  - discord-haskell-1.5.2@sha256:90fbc8f804b1b4d8f69d3b38bd4ca7ab76bbb2b08668ce171a5e3b09b72c5e63,3798
-  - emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273
-  - wss-client-0.3.0.0@sha256:0c4170c5331ead61fe326e9f4789bcec6cc66ea6268fca6c0dba48be5abeaeaf,1985
+extra-deps: 
+- discord-haskell-1.8.6@sha256:59aa6be20aa7ee107251beb2b98a185c9b656af8afc8da8ba6737808b24f2b45,3562
+- emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273
 # Override default flag values for local packages and extra-deps
 # flags: {}
 

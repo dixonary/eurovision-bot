@@ -1,6 +1,15 @@
 body {
   margin: 0;
-  background-color: skyblue;
+  background: radial-gradient(circle at center, #506ebf, #112178);
+}
+
+:root {
+  color:white;
+  font-weight:bold;
+}
+
+html,body {
+  min-height:100%;
 }
 
 p {

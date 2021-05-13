@@ -4,11 +4,11 @@ import Data.String
 
 data CountryCode
   = ALB
-  | ARM
+  -- | ARM -- Not performing in 2021!
   | AUS
   | AUT
   | AZE
-  | BLR
+  -- | BLR -- Not performing in 2021!
   | BEL
   | BGR
   | HRV
@@ -48,11 +48,11 @@ data CountryCode
 
 getFlag :: IsString s => CountryCode -> s
 getFlag ALB = ":flag_al:"
-getFlag ARM = ":flag_am:"
+-- getFlag ARM = ":flag_am:"
 getFlag AUS = ":flag_au:"
 getFlag AUT = ":flag_at:"
 getFlag AZE = ":flag_az:"
-getFlag BLR = ":flag_by:"
+-- getFlag BLR = ":flag_by:"
 getFlag BEL = ":flag_be:"
 getFlag BGR = ":flag_bg:"
 getFlag HRV = ":flag_hr:"
@@ -91,11 +91,11 @@ getFlag GBR = ":flag_gb:"
 
 getEmoji :: IsString s => CountryCode -> s
 getEmoji ALB = "\127462\127473"
-getEmoji ARM = "\127462\127474"
+-- getEmoji ARM = "\127462\127474"
 getEmoji AUS = "\127462\127482"
 getEmoji AUT = "\127462\127481"
 getEmoji AZE = "\127462\127487"
-getEmoji BLR = "\127463\127486"
+-- getEmoji BLR = "\127463\127486"
 getEmoji BEL = "\127463\127466"
 getEmoji BGR = "\127463\127468"
 getEmoji HRV = "\127469\127479"
@@ -134,11 +134,11 @@ getEmoji GBR = "\127468\127463"
 
 getName :: IsString s => CountryCode -> s
 getName ALB = "Albania"
-getName ARM = "Armenia"
+-- getName ARM = "Armenia"
 getName AUS = "Australia"
 getName AUT = "Austria"
 getName AZE = "Azerbaijan"
-getName BLR = "Belarus"
+-- getName BLR = "Belarus"
 getName BEL = "Belgium"
 getName BGR = "Bulgaria"
 getName HRV = "Croatia"

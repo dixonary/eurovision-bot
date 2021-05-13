@@ -1,16 +1,12 @@
 module CLI where
 
 import Control.Arrow ((>>>))
-import Control.Concurrent (threadDelay)
-import Control.Concurrent.STM.TVar
 import Control.Monad.Reader
 import Countries
 import Data.Function ((&))
 import Data.List (elemIndex)
-import Data.Map (Map)
 import qualified Data.Map as Map
 import Data.Maybe (fromMaybe)
-import qualified Data.Text as T
 import System.Console.Haskeline
 import System.IO hiding (getLine)
 import System.Process
@@ -20,44 +16,53 @@ import Util
 import Websockets
 import Prelude hiding (getLine)
 
-runCLI :: Env -> IO ()
+
+type CLI = ReaderT EuroState' IO
+
+runCLI :: EuroState' -> IO ()
 runCLI = runReaderT loop
 
-loop :: Eurovision ()
+loop :: CLI ()
 loop = do
-  x <- (>>= readMaybe) <$> liftIO (getLine "> ")
-  case x of
-    Just Reset -> modifyState (const empty)
-    Just Titles -> liftIO $ playTitles
-    Just PlayNext -> playNext
-    Just TakeBallots -> takeBallots
-    Just (Play n) -> liftIO $ play n
-    Just (User u) -> setUser u
-    Just Ten -> ten
-    Just Twelve -> twelve
-    Just Totals -> printTotals
-    Just (AddAllFor cc) -> addAllFor cc
-    Just (AddAll) -> void $ sequence (addAllFor <$> [minBound .. maxBound])
+  line <- liftIO $ getLine "> "
+  let xM = line >>= readMaybe
+
+  case xM of
     Nothing -> liftIO $ putStrLn "??"
+    Just x -> case x of
+      FullState      -> get >>= liftIO . print
+      Reset          -> set empty
+      Titles         -> liftIO playTitles
+      PlayNext       -> playNext
+      TakeBallots    -> takeBallots
+      Play n         -> liftIO $ play n
+      User u         -> setUser u
+      Remaining      -> pure ()
+      Ten            -> ten
+      Twelve         -> twelve
+      Totals         -> printTotals
+      AddAllFor cc   -> addAllFor cc
+      AddAll         -> sequence_ (addAllFor <$> [minBound .. maxBound])
+
   loop
 
-printTotals :: Eurovision ()
+printTotals :: CLI ()
 printTotals = do
-  totals <- get totals
+  totals <- gets totals
   liftIO $ print totals
 
-takeBallots :: Eurovision ()
-takeBallots = modifyState (\s@State {..} -> s {untotaledBallots = ballots})
+takeBallots :: CLI ()
+takeBallots = modify (\s@State {..} -> s {untotaledBallots = ballots})
 
-ten :: Eurovision ()
+ten :: CLI ()
 ten = addOneScore 10
 
-twelve :: Eurovision ()
+twelve :: CLI ()
 twelve = addOneScore 12
 
-addOneScore :: Integer -> Eurovision ()
+addOneScore :: Integer -> CLI ()
 addOneScore i = do
-  s@State {..} <- getState
+  s@State {..} <- get
   case currentUser of
     Nothing -> return ()
     Just uid -> do
@@ -67,23 +72,20 @@ addOneScore i = do
       let totals' = case country of
             Nothing -> totals
             Just cc -> Map.insertWith (+) cc i totals
-      modifyState
-        ( const
-            s
-              { untotaledBallots = Map.insert uid ballot' untotaledBallots,
-                totals = totals'
-              }
-        )
+      set s
+        { untotaledBallots = Map.insert uid ballot' untotaledBallots,
+          totals = totals'
+        }
 
-addAllFor :: CountryCode -> Eurovision ()
+addAllFor :: CountryCode -> CLI ()
 addAllFor cc = do
-  ballots <- get untotaledBallots
+  ballots <- gets untotaledBallots
   -- get total of scores in all ballots where
   let total = sum $ fmap getCC ballots
       ballots' = fmap removeCC ballots
       getCC = Map.assocs >>> fmap (\(x, y) -> (y, x)) >>> lookup cc >>> fromMaybe 0
-      removeCC = Map.toAscList >>> filter (\(x, y) -> y /= cc) >>> Map.fromAscList
-  modifyState
+      removeCC = Map.toAscList >>> filter (\(_, y) -> y /= cc) >>> Map.fromAscList
+  modify
     ( \s@State {..} ->
         s
           { totals = Map.insertWith (+) cc total totals,
@@ -93,10 +95,10 @@ addAllFor cc = do
 
 -- remove from untotaled ballots
 
-setUser :: String -> Eurovision ()
+setUser :: String -> CLI ()
 setUser s =
   do
-    unames <- get userNames
+    unames <- gets userNames
     let uidM =
           unames
             & Map.toAscList
@@ -105,45 +107,46 @@ setUser s =
     case uidM of
       Nothing -> liftIO $ putStrLn $ "User not found: " ++ s
       Just uid ->
-        modifyState (\s@State {..} -> s {currentUser = Just uid})
+        modify (\s -> s {currentUser = Just uid})
 
 playTitles :: IO ()
 playTitles = setScene "titles"
 
-playNext :: Eurovision ()
+playNext :: CLI ()
 playNext = do
-  lp <- get lastPlayed
+  lp <- gets lastPlayed
   let nowPlay =
-        if (lp + 1) > (length ([minBound .. maxBound] :: [CountryCode]))
+        if (lp + 1) > length ([minBound .. maxBound] :: [CountryCode])
           then 0
-          else (lp + 1)
-  modifyState (\s@State {..} -> s {lastPlayed = nowPlay})
+          else lp + 1
+  modify (\s -> s {lastPlayed = nowPlay})
   liftIO $ play (toEnum nowPlay)
 
 -- Play a song
 play :: CountryCode -> IO ()
 play code = do
   let i = (elemIndex code [minBound .. maxBound] ?? 0) + 1
-  putStrLn $ show code
+  print code
   writeFile ".countryCode" $ show code
   writeFile ".longName" $ getName code
   writeFile ".num" $ show i
   withFile "/dev/null" WriteMode $
-    \null -> do
-      (x, y, z, ph) <-
+    \devnull -> do
+      (_, _, _, ph) <-
         createProcess
           (proc "vlc" ["--fullscreen", show code ++ ".mp4"])
             { cwd = Just "/run/media/alex/data/eurovision-2020",
-              std_err = UseHandle null,
-              std_out = UseHandle null,
-              std_in = UseHandle null
+              std_err = UseHandle devnull,
+              std_out = UseHandle devnull,
+              std_in = UseHandle devnull
             }
       setScene "song"
-      waitForProcess ph
+      _ <- waitForProcess ph
       setScene "sting"
 
 data Command
   = Reset
+  | FullState
   | Titles
   | User String
   | TakeBallots

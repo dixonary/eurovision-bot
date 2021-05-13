@@ -42,26 +42,16 @@ default-extensions:
   - LambdaCase
   - TupleSections
 
-library:
-  source-dirs: src
-
 executables:
   eurovision-scores-exe:
     main: Main.hs
-    source-dirs: app
+    source-dirs: 
+      - app
+      - src
     ghc-options:
       - -threaded
       - -rtsopts
       - -with-rtsopts=-N
-    dependencies:
-      - eurovision-scores
-# tests:
-#   eurovision-scores-test:
-#     main: Spec.hs
-#     source-dirs: test
-#     ghc-options:
-#       - -threaded
-#       - -rtsopts
-#       - -with-rtsopts=-N
-#     dependencies:
-#       - eurovision-scores
+      - -Werror
+      - -Wall
+      - -Wno-name-shadowing
