@@ -1,29 +1,33 @@
+{-# LANGUAGE TypeSynonymInstances, FlexibleInstances #-}
+
 module Types where
 
 import Control.Arrow ((>>>))
 import Control.Concurrent.STM
-import Control.Monad (unless)
 import Control.Monad.Reader
 import Countries
 import Data.Function ((&))
+import Data.Functor ((<&>))
 import qualified Data.List as List
 import Data.Map (Map)
 import qualified Data.Map as Map
-import Discord.Types
 import System.Directory (doesFileExist)
 import Util
+
+import Discord
+import Discord.Types
 
 type Totals = Map CountryCode Integer
 
 type Ballot = Map Integer CountryCode
 
-type Env = TVar State
-
-type Eurovision = ReaderT (TVar State) IO
+type EuroState'  = TVar EuroState
+type Eurovision  = ReaderT EuroState' IO
+type EuroDiscord = ReaderT EuroState' DiscordHandler 
 
 --------------------------------------------------------------------------------
 -- Game State
-data State
+data EuroState
   = State
       { ballots :: Map UserId Ballot,
         totals :: Map CountryCode Integer,
@@ -36,41 +40,49 @@ data State
       }
   deriving (Show, Read, Eq)
 
-empty :: State
+class HasEuroState m where
+  get    :: m EuroState
+  gets   :: (EuroState -> a) -> m a
+  modify :: (EuroState -> EuroState) -> m ()
+  set    :: EuroState -> m ()
+
+instance HasEuroState Eurovision where
+  get         = ask >>= liftIO . readTVarIO
+  gets func   = get <&> func  
+  modify func = get >>= set    . func
+  set state = do
+    st' <- ask
+    liftIO $ atomically $ writeTVar st' state
+    liftIO $ serialize state
+
+-- Defer to the definitions over IO
+instance HasEuroState EuroDiscord where
+  get    = io get
+  gets   = io . gets
+  set    = io . set
+  modify = io . modify
+  
+io :: Eurovision a -> EuroDiscord a
+io = mapReaderT lift
+
+empty :: EuroState
 empty = State mempty mempty mempty mempty mempty mempty (-1) Nothing
 
 stateFile :: String
 stateFile = ".state"
 
-getState :: Eurovision State
-getState = do
-  st <- ask
-  liftIO $ readTVarIO st
-
-get :: (State -> a) -> Eurovision a
-get func = do
-  st <- ask
-  liftIO $ func <$> readTVarIO st
-
-modifyState :: (State -> State) -> Eurovision ()
-modifyState func = do
-  st <- ask
-  liftIO $ atomically $ modifyTVar st func
-  serialize
-
 -- Read the current total state from a file.
 -- Do this only on startup.
-initializeState :: IO Env
+initializeState :: IO EuroState'
 initializeState = do
-  exists <- doesFileExist stateFile
-  unless exists $ newTVarIO empty >>= runReaderT serialize
-  (readFile stateFile & fmap read) >>= newTVarIO
+  stateExists <- doesFileExist stateFile
+  unless stateExists $ serialize empty
+  readFile stateFile >>= newTVarIO . read
 
 -- Write the current total state out to a file.
 -- Do this every time the state changes.
-serialize :: Eurovision ()
-serialize = do
-  state <- getState
+serialize :: EuroState -> IO ()
+serialize state = do
   liftIO $ writeFile stateFile $ show state
   liftIO $ writeFile "app/reporter/report.json" $ getReport (userNames state) (ballots state)
   liftIO $ writeFile "app/totalizer/totals.json" $ getTotals (totals state)

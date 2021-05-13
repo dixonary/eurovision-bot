@@ -11,13 +11,11 @@ import Data.Attoparsec.Text hiding (take)
 import Text.Read (readMaybe)
 import Data.Char (isSpace)
 
-import qualified Data.Text as T
 import Data.Text (Text)
 
 import Data.List (elemIndex)
 import Data.Maybe (fromJust)
 
-import Data.Map (Map, (!))
 import qualified Data.Map as Map
 
 import Control.Applicative
@@ -38,7 +36,7 @@ validScores = [12,10,8,7,6,5,4,3,2,1,0]
 -- Parsing
 
 parseScore :: Text -> Either String Score
-parseScore text = parseOnly scoreP text
+parseScore = parseOnly scoreP
 
 scoreP :: Parser Score
 scoreP = valueCountryP <|> countryValueP
@@ -69,7 +67,7 @@ updateBallot :: Ballot -> Score -> Ballot
 updateBallot ballot Score{..} = 
   let
     deleteCode x y = if y == Just x then Nothing else y
-    deleteNothings (x, Nothing) = []
+    deleteNothings (_, Nothing) = []
     deleteNothings (x, Just y)  = [(x,y)]
 
     merge mid (l, r) = case r of
