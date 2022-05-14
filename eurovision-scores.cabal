@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.4.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: b82241660152d0bd9dd6cef40a0c3659ddde756c8bab80d92d20a2b4767162f5
+-- hash: 7819e5fed7e9dd9c2a468868073b688349403d42795112d86ece9573d5c45032
 
 name:           eurovision-scores
 version:        0.1.0.0
@@ -35,7 +35,13 @@ library
       Paths_eurovision_scores
   hs-source-dirs:
       src
-  default-extensions: MultiWayIf RecordWildCards OverloadedStrings NondecreasingIndentation LambdaCase TupleSections
+  default-extensions:
+      MultiWayIf
+      RecordWildCards
+      OverloadedStrings
+      NondecreasingIndentation
+      LambdaCase
+      TupleSections
   build-depends:
       aeson
     , attoparsec
@@ -62,7 +68,13 @@ executable eurovision-scores-exe
       Paths_eurovision_scores
   hs-source-dirs:
       app
-  default-extensions: MultiWayIf RecordWildCards OverloadedStrings NondecreasingIndentation LambdaCase TupleSections
+  default-extensions:
+      MultiWayIf
+      RecordWildCards
+      OverloadedStrings
+      NondecreasingIndentation
+      LambdaCase
+      TupleSections
   ghc-options: -threaded -rtsopts -with-rtsopts=-N
   build-depends:
       aeson

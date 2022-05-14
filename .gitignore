@@ -5,3 +5,5 @@
 .countryCode
 .longName
 .num
+.env
+.euro-token

@@ -12,6 +12,7 @@ import qualified Data.Map as Map
 import Discord.Types
 import System.Directory (doesFileExist)
 import Util
+import Discord (DiscordHandler)
 
 type Totals = Map CountryCode Integer
 
@@ -19,6 +20,7 @@ type Ballot = Map Integer CountryCode
 
 type Env = TVar State
 
+type EurovisionBot = ReaderT (TVar State) DiscordHandler
 type Eurovision = ReaderT (TVar State) IO
 
 --------------------------------------------------------------------------------
@@ -62,9 +64,11 @@ modifyState func = do
 -- Do this only on startup.
 initializeState :: IO Env
 initializeState = do
-  exists <- doesFileExist stateFile
-  unless exists $ newTVarIO empty >>= runReaderT serialize
-  (readFile stateFile & fmap read) >>= newTVarIO
+  exists <- liftIO $ doesFileExist stateFile
+  unless exists $ do
+    v <- liftIO $ newTVarIO empty
+    runReaderT serialize v
+  liftIO $ readFile stateFile >>= newTVarIO . read
 
 -- Write the current total state out to a file.
 -- Do this every time the state changes.

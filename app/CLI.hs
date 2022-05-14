@@ -37,7 +37,7 @@ loop = do
     Just Twelve -> twelve
     Just Totals -> printTotals
     Just (AddAllFor cc) -> addAllFor cc
-    Just (AddAll) -> void $ sequence (addAllFor <$> [minBound .. maxBound])
+    Just (AddAll) -> sequence_ (addAllFor <$> [minBound .. maxBound])
     Nothing -> liftIO $ putStrLn "??"
   loop
 

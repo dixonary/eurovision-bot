@@ -1,3 +1,5 @@
+{-# LANGUAGE TypeApplications #-}
+{-# LANGUAGE RankNTypes #-}
 module Bot where
 
 import Control.Concurrent.STM
@@ -6,7 +8,7 @@ import Control.Monad (forM, forM_, unless, void)
 import Control.Monad.Reader
 import Countries
 import qualified Data.ByteString as BS
-import Data.Map ((!), Map)
+import Data.Map (Map, (!))
 import qualified Data.Map as Map
 import Data.Text as T
 import Discord
@@ -17,129 +19,133 @@ import Score
 import System.Environment
 import Types
 import Util
+import Discord.Internal.Rest.Channel (MessageDetailedOpts(..))
 
 runBot :: Eurovision ()
 runBot = do
   st <- ask
-  getState >>= \s -> liftIO (print s)
+  getState >>= \s -> liftIO $ print s
   err <- do
     botToken <- liftIO $ getEnv "BOT_TOKEN"
-    liftIO $ runDiscord $
-      def
-        { discordToken = T.pack botToken,
-          discordOnEvent = \dh e -> runReaderT (eventHandler dh e) st
-        }
+    liftIO $
+      runDiscord $
+        def
+          { discordToken = T.pack botToken,
+            discordOnEvent = \e -> void $ runReaderT (eventHandler e) st
+          }
   liftIO $ print err
   runBot
 
-eventHandler :: DiscordHandle -> Event -> Eurovision ()
-eventHandler dh event = case event of
-  MessageCreate m -> newMessage dh m
-  MessageReactionAdd r -> addReact dh r
-  MessageReactionRemove r -> removeReact dh r
+eventHandler :: Event -> EurovisionBot ()
+eventHandler event = case event of
+  MessageCreate m -> newMessage m
+  MessageReactionAdd r -> addReact r
+  MessageReactionRemove r -> removeReact r
   _ -> return ()
 
-newMessage :: DiscordHandle -> Message -> Eurovision ()
-newMessage dh message@Message {..} = do
-  dms <- get dmChannels
-  if  -- Ignore bot messages
+newMessage :: Message -> EurovisionBot ()
+newMessage message@Message {..} = do
+  dms <- liftEuro $ get dmChannels
+  if
+      -- Ignore bot messages
       | userIsBot messageAuthor ->
         return ()
       -- Start a new vote if we don't have one in progress
-      | messageText == "!vote" && userId messageAuthor `Map.notMember` dms ->
-        startVote message dh
-      | messageChannel `elem` Map.elems dms ->
+      | "!vote" `isPrefixOf` messageContent 
+          && userId messageAuthor `Map.notMember` dms ->
+        startVote message
+      | messageChannelId `elem` Map.elems dms ->
         -- Assume it's a score update and act appropriately
-        case parseScore messageText of
+        case parseScore messageContent of
           Left err ->
-            call_ dh $
+            call_ $
               Req.CreateMessage
-                messageChannel
+                messageChannelId
                 (T.pack err)
           Right score -> do
             recordScore (userId messageAuthor) score
-            reactFlag (userId messageAuthor) messageId (countryCode score) dh
-            updateBallotVis (userId messageAuthor) dh
+            reactFlag (userId messageAuthor) messageId (countryCode score)
+            updateBallotVis (userId messageAuthor)
       | otherwise -> return ()
 
 -- Add a flag react to a message
-reactFlag :: UserId -> MessageId -> CountryCode -> DiscordHandle -> Eurovision ()
-reactFlag uid mid code dh = do
-  dmChannelM <- get $ (!? uid) . dmChannels
+reactFlag :: UserId -> MessageId -> CountryCode -> EurovisionBot ()
+reactFlag uid mid code = do
+  dmChannelM <- liftEuro $ get $ (!? uid) . dmChannels
   case dmChannelM of
     Nothing -> return ()
     Just dmChannel ->
-      call_ dh $ Req.CreateReaction (dmChannel, mid) (getEmoji code)
+      call_ $ Req.CreateReaction (dmChannel, mid) (getEmoji code)
 
 -- Given a score, add it to the ballot.
-recordScore :: UserId -> Score -> Eurovision ()
+recordScore :: UserId -> Score -> EurovisionBot ()
 recordScore uid score = do
-  ballots <- get ballots
+  ballots <- liftEuro $ get ballots
   let ballot' = updateBallot (ballots !@ uid) score
       ballots' = Map.insert uid ballot' ballots
-  modifyState (\state -> state {ballots = ballots'})
+  liftEuro $ modifyState (\state -> state {ballots = ballots'})
 
 -- Update the rendering of a user's ballot.
-updateBallotVis :: UserId -> DiscordHandle -> Eurovision ()
-updateBallotVis uid dh = do
-  ballot <- get $ (!@ uid) . ballots
-  channelIdM <- get $ (!? uid) . dmChannels
-  messageIdM <- get $ (!? uid) . scoreMessages
+updateBallotVis :: UserId -> EurovisionBot ()
+updateBallotVis uid = do
+  ballot <- liftEuro $ get $ (!@ uid) . ballots
+  channelIdM <- liftEuro $ get $ (!? uid) . dmChannels
+  messageIdM <- liftEuro $ get $ (!? uid) . scoreMessages
   case (,) <$> channelIdM <*> messageIdM of
     Nothing -> return ()
     Just ballotMsg -> do
-      call_ dh $
+      call_ $
         Req.EditMessage
           ballotMsg
-          (showBallot ballot)
-          Nothing
+          def {messageDetailedContent = showBallot ballot }
 
 -- Get someone ready to vote.
-startVote :: Message -> DiscordHandle -> Eurovision ()
-startVote msg dh = do
+startVote :: Message -> EurovisionBot ()
+startVote msg = do
+  call $ Req.CreateReaction (messageChannelId msg, messageId msg) "white_check_mark"
   let uid = userId $ messageAuthor msg
-  dmChannelE <- call dh $ Req.CreateDM uid
+  dmChannelE <- call $ Req.CreateDM uid
   case dmChannelE of
     Left err -> liftIO $ print err
     Right dmChannel -> do
       -- Delete all messages in the channel
-      messagesE <-
-        call dh $
-          Req.GetChannelMessages
-            (channelId dmChannel)
-            (100, Req.LatestMessages)
-      case messagesE of
-        Left err -> liftIO $ print err
-        Right messages ->
-          forM_ messages $ \message ->
-            call dh $
-              Req.DeleteMessage
-                (channelId dmChannel, messageId message)
+      -- messagesE <-
+      --   call $
+      --     Req.GetChannelMessages
+      --       (channelId dmChannel)
+      --       (100, Req.LatestMessages)
+      -- case messagesE of
+      --   Left err -> liftIO $ print err
+      --   Right messages ->
+      --     forM_ messages $ \message ->
+      --       call $
+      --         Req.DeleteMessage
+      --           (channelId dmChannel, messageId message)
       -- Send a friendly image
-      imgBytes <- liftIO $ BS.readFile "/home/alex/eurovision-logo.png"
+      imgBytes <- liftIO $ BS.readFile "EurovisionBot-logo.png"
       res <-
-        call dh $
-          Req.CreateMessageUploadFile
+        call $
+          Req.CreateMessageDetailed
             (channelId dmChannel)
-            "euro-2020.png"
-            imgBytes
-      call dh
-        $ Req.CreateMessage
+            def
+              { messageDetailedFile = Just ("EurovisionBot-logo.png", imgBytes) }
+      call $
+        Req.CreateMessage
           (channelId dmChannel)
-        $ T.unlines
-          [ "Send me a message with a 3 letter country code and the points to award (eg. `GBR 12`).",
-            "If you assign the same amount of points more than once, I'll move other countries down to make space."
-          ]
+          $ T.unlines
+            [ "Send me a message with a 3 letter country code and the points to award (eg. `GBR 12`).",
+              "If you assign the same amount of points more than once, I'll move other countries down to make space."
+            ]
       -- Send the ballot message
       ballotMsgE <-
-        call dh
-          $ Req.CreateMessage
+        call $
+          Req.CreateMessage
             (channelId dmChannel)
-          $ showBallot mempty
+            $ showBallot mempty
       case ballotMsgE of
         Left err -> liftIO $ print err
         Right ballotMsg -> do
-          modifyState
+          liftEuro $ modifyState
             ( \s@State {..} ->
                 s
                   { scoreMessages = Map.insert uid (messageId ballotMsg) scoreMessages,
@@ -170,21 +176,29 @@ showBallot ballot = T.unlines $ "**Your Scorecard**" : scoreLines
 -- Call an API endpoint.
 call ::
   (Req.Request (r a), FromJSON a) =>
-  DiscordHandle ->
   r a ->
-  Eurovision (Either RestCallErrorCode a)
-call dh req = liftIO $ restCall dh req
+  EurovisionBot (Either RestCallErrorCode a)
+call req = liftDiscord $ restCall req
 
 -- Call an API endpoint, discarding the result.
 call_ ::
   (Req.Request (r a), FromJSON a) =>
-  DiscordHandle ->
   r a ->
-  Eurovision ()
-call_ dh req = liftIO $ void $ restCall dh req
+  EurovisionBot ()
+call_ req = liftDiscord $ void $ restCall req
 
-addReact :: DiscordHandle -> ReactionInfo -> Eurovision ()
-addReact dh ReactionInfo {..} = undefined
+liftDiscord :: forall a . DiscordHandler a -> EurovisionBot a
+liftDiscord d = do
+  x <- lift ask
+  liftIO $ runReaderT d x
 
-removeReact :: DiscordHandle -> ReactionInfo -> Eurovision ()
-removeReact dh ReactionInfo {..} = undefined
+liftEuro :: forall a . Eurovision a -> EurovisionBot a
+liftEuro e = do
+  x <- ask
+  liftIO $ runReaderT e x
+
+addReact :: ReactionInfo -> EurovisionBot ()
+addReact ReactionInfo {..} = undefined
+
+removeReact :: ReactionInfo -> EurovisionBot ()
+removeReact ReactionInfo {..} = undefined

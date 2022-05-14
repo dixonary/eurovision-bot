@@ -5,12 +5,12 @@
 
 packages:
 - completed:
-    hackage: discord-haskell-1.5.2@sha256:90fbc8f804b1b4d8f69d3b38bd4ca7ab76bbb2b08668ce171a5e3b09b72c5e63,3798
+    hackage: discord-haskell-1.12.5@sha256:939a677754edc67316d4af1982cd4c359761148badd75cf4b733bf22260235bd,4611
     pantry-tree:
-      size: 2108
-      sha256: 9a9ba57016f413553a67aa0678f64c432b18f0e65fd116c75bdb1e99d0f9d25e
+      size: 2844
+      sha256: 415a975ca69bb9ce9c49a569a61a12cdd9d91842e5777ca2c9496fea77dd2ed2
   original:
-    hackage: discord-haskell-1.5.2@sha256:90fbc8f804b1b4d8f69d3b38bd4ca7ab76bbb2b08668ce171a5e3b09b72c5e63,3798
+    hackage: discord-haskell-1.12.5@sha256:939a677754edc67316d4af1982cd4c359761148badd75cf4b733bf22260235bd,4611
 - completed:
     hackage: emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273
     pantry-tree:
@@ -18,16 +18,9 @@ packages:
       sha256: dd9ea90a631342e5db0fc21331ade4d563a685e9125d5a3989eefa8e1b96c6c6
   original:
     hackage: emoji-0.1.0.2@sha256:d995572a5c7dcd28f98eb15c6e387a7b3bda1ac2477ab0d9dba8580d5d7b161f,1273
-- completed:
-    hackage: wss-client-0.3.0.0@sha256:0c4170c5331ead61fe326e9f4789bcec6cc66ea6268fca6c0dba48be5abeaeaf,1985
-    pantry-tree:
-      size: 457
-      sha256: 7e25dc1799bbfa8f90e623e27a02809f26bf46e29a051a9fc58619eb007e81cb
-  original:
-    hackage: wss-client-0.3.0.0@sha256:0c4170c5331ead61fe326e9f4789bcec6cc66ea6268fca6c0dba48be5abeaeaf,1985
 snapshots:
 - completed:
-    size: 496112
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/15/13.yaml
-    sha256: 75a1a0f870e1876898b117b0e443f911b3fa2985bfabb53158c81ab5765beda5
-  original: lts-15.13
+    size: 590102
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/18/27.yaml
+    sha256: 79a786674930a89301b0e908fad2822a48882f3d01486117693c377b8edffdbe
+  original: lts-18.27
